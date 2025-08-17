@@ -11,8 +11,8 @@ This repository contains a **time series analysis and forecasting project** of E
 ## Exploratory Data Analysis (EDA)
 
 ### 1. Dataset Overview
-- Displayed `info()`, `describe()`, `head()`, and `tail()` to inspect data types, missing values, and statistics.
-- Initial line plot of the dataset shows trends over time.
+- Inspected data types, missing values, and displayed summary statistics.
+- Created initial line plot of the dataset, showing clear trends over time.
 
 ### 2. Autocorrelation Analysis
 - Used `plot_correlations` from `sktime` to visualize ACF and PACF.
@@ -24,10 +24,6 @@ This repository contains a **time series analysis and forecasting project** of E
   - **30-day** (monthly)
   - **365-day** (yearly)
 - Extracted trend, seasonal, and residual components.
-- Residual analysis:
-  - 7-day residuals: low variance, normally distributed.
-  - 30-day residuals: higher variance, normally distributed.
-  - 365-day residuals: high peak, thin tails, heteroskedasticity.
 - **Conclusion:** 7-day periodicity preferred for forecasting.
 
 ## Forecasting Methods
@@ -44,6 +40,7 @@ This repository contains a **time series analysis and forecasting project** of E
 - Grid search over `p = 0-7`, `d = 0-2`, `q = 0-2`.
 - Temporal train-test split with an additional validation set for hyperparameter tuning.
 - MAPE used for selecting the best `(p,d,q)` combination.
+- Also used AutoARIMA to determine most appropriate parameter values.
 - Suppressed excessive warnings during fitting using `sys.stderr` redirection.
 
 ### 3. K-Nearest Neighbors (KNN) Regressor
@@ -55,7 +52,8 @@ This repository contains a **time series analysis and forecasting project** of E
 
 ### 4. XGBoost Regressor
 - Tree-based gradient boosting approach.
-- Features: past lags of arrivals.
+- Features: past lags of target.
+- Hyperparameter tuning using `GridSearchCV`.
 - Applied both 7-day and 30-day forecast horizons.
 - MAPE used for evaluation and comparison with other methods.
 
@@ -64,17 +62,14 @@ This repository contains a **time series analysis and forecasting project** of E
 - Weekly seasonality evident (lag-7 autocorrelation).
 - Residuals analysis suggests 7-day periodicity is most appropriate for modeling.
 - Forecasting performance:
-  - Exponential Smoothing performs reasonably well for short-term horizons.
-  - ARIMA provides a rigorous parametric approach accounting for autocorrelation.
-  - KNN and XGBoost offer flexible, data-driven forecasting alternatives.
-- Overall, **weekly periodicity and residual checks are crucial** for choosing the forecasting model.
+  - KNN and XGBoost offer the most robust predictions.
 
 ## Visualizations
 - Time series plots of ED arrivals.
 - STL decomposition for 7-, 30-, and 365-day periods.
 - Residuals scatter and histogram plots.
 - ACF/PACF plots of residuals.
-- Forecast vs actual plots for ES, ARIMA, KNN, and XGBoost.
+- Forecast vs actual plots for ES, ARIMA (including AutoARIMA), KNN, and XGBoost.
 
 ## Requirements
 ```text
@@ -91,7 +86,7 @@ xgboost
 1. Load the dataset (ed_time_series.csv).
 2. Run exploratory analysis (info(), describe(), plots, ACF/PACF).
 3. Perform STL decomposition for chosen periodicities.
-4. Split dataset into train, validation, and test sets.
+4. Split dataset into train and test sets.
 5. Fit forecasting models:
 - Exponential Smoothing
 - ARIMA
